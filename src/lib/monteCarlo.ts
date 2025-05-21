@@ -8,7 +8,7 @@ export interface Slice {
 
 export interface SimulationParams {
   slices: Slice[];
-  deadline: number;
+  deadlineDate: Date;
   cycleTime: number;
   globalRisk: number;
 }
@@ -20,6 +20,8 @@ export interface SimulationResult {
   expectedDate: Date;
   p90Date: Date;
   sliceCount: number;
+  durations: number[];
+  deadlineDays: number;
 }
 
 export function validateSlices(data: any): Slice[] {
@@ -40,6 +42,13 @@ export function calculateDeliveryDate(daysFromNow: number): Date {
   return date;
 }
 
+export function calculateDaysFromNow(targetDate: Date): number {
+  const now = new Date();
+  const diffTime = targetDate.getTime() - now.getTime();
+  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+  return Math.ceil(diffDays);
+}
+
 export function formatDate(date: Date): string {
   return date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -50,8 +59,11 @@ export function formatDate(date: Date): string {
 }
 
 export function runSimulation(params: SimulationParams): SimulationResult {
-  const { slices, deadline, cycleTime, globalRisk } = params;
+  const { slices, deadlineDate, cycleTime, globalRisk } = params;
   const iterations = 10000;
+
+  // Calculate days until deadline
+  const deadlineDays = calculateDaysFromNow(deadlineDate);
 
   const totalDurations = _.times(iterations, () => {
     return _.sum(slices.map((slice) => {
@@ -60,7 +72,7 @@ export function runSimulation(params: SimulationParams): SimulationResult {
     }));
   });
 
-  const metDeadline = totalDurations.filter(d => d <= deadline).length;
+  const metDeadline = totalDurations.filter(d => d <= deadlineDays).length;
   const probability = metDeadline / iterations;
   const averageDuration = mean(totalDurations);
   const p90Duration = quantile(totalDurations, 0.9);
@@ -71,6 +83,8 @@ export function runSimulation(params: SimulationParams): SimulationResult {
     p90: p90Duration.toFixed(2),
     expectedDate: calculateDeliveryDate(averageDuration),
     p90Date: calculateDeliveryDate(p90Duration),
-    sliceCount: slices.length
+    sliceCount: slices.length,
+    durations: totalDurations,
+    deadlineDays
   };
 }
