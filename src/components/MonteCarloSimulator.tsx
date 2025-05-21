@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import {
-    Slice,
     SimulationResult,
-    validateSlices,
     runSimulation,
     formatDate,
     calculateDaysFromNow
@@ -12,58 +10,67 @@ import {
 import SimulationGraph from './SimulationGraph';
 
 interface MonteCarloSimulatorProps {
-    initialJsonInput?: string;
-    initialCycleTime?: number;
-    initialGlobalRisk?: number;
+    initialThroughput?: number[];
+    initialSprintLength?: number;
     onSimulationComplete?: (result: SimulationResult) => void;
 }
 
 export default function MonteCarloSimulator({
-                                                initialJsonInput = '',
-                                                initialCycleTime = 1,
-                                                initialGlobalRisk = 0.1,
+                                                initialThroughput = [10, 12, 8, 15, 11],
+                                                initialSprintLength = 14,
                                                 onSimulationComplete
                                             }: MonteCarloSimulatorProps) {
-    const [jsonInput, setJsonInput] = useState(initialJsonInput);
-    const [slices, setSlices] = useState<Slice[]>([]);
+    const [storyCountMin, setStoryCountMin] = useState(80);
+    const [storyCountMax, setStoryCountMax] = useState(90);
+    const [storySplitMin, setStorySplitMin] = useState(1.0);
+    const [storySplitMax, setStorySplitMax] = useState(2.0);
+    const [throughputInput, setThroughputInput] = useState(initialThroughput.join(', '));
+    const [sprintLengthDays, setSprintLengthDays] = useState(initialSprintLength);
+    const [startDate, setStartDate] = useState<Date>(new Date());
     const [deadlineDate, setDeadlineDate] = useState<Date>(() => {
-        // Default to 30 days from now
+        // Default to 90 days from now
         const date = new Date();
-        date.setDate(date.getDate() + 30);
+        date.setDate(date.getDate() + 90);
         return date;
     });
-    const [cycleTime, setCycleTime] = useState(initialCycleTime);
-    const [globalRisk, setGlobalRisk] = useState(initialGlobalRisk);
     const [result, setResult] = useState<SimulationResult | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    const parseJson = () => {
-        try {
-            const data = JSON.parse(jsonInput);
-            const validatedSlices = validateSlices(data);
-            setSlices(validatedSlices);
-            setError(null);
-        } catch (e) {
-            setError((e as any).message);
-        }
-    };
-
     const simulateRun = () => {
-        const simulationResult = runSimulation({
-            slices,
-            deadlineDate,
-            cycleTime,
-            globalRisk
-        });
+        try {
+            // Parse throughput values
+            const throughputValues = throughputInput
+                .split(',')
+                .map(val => parseFloat(val.trim()))
+                .filter(val => !isNaN(val));
 
-        setResult(simulationResult);
+            if (throughputValues.length === 0) {
+                throw new Error('Please enter at least one valid throughput value');
+            }
 
-        if (onSimulationComplete) {
-            onSimulationComplete(simulationResult);
+            const simulationResult = runSimulation({
+                storyCountMin,
+                storyCountMax,
+                storySplitMin,
+                storySplitMax,
+                historicThroughput: throughputValues,
+                sprintLengthDays,
+                startDate
+            }, deadlineDate);
+
+            setResult(simulationResult);
+            setError(null);
+
+            if (onSimulationComplete) {
+                onSimulationComplete(simulationResult);
+            }
+        } catch (e: any) {
+            setError(e.message);
         }
     };
 
-    // Format the deadline date for display
+    // Format dates for display
+    const formattedStartDate = formatDate(startDate);
     const formattedDeadlineDate = formatDate(deadlineDate);
 
     // Calculate days until deadline for display
@@ -74,84 +81,133 @@ export default function MonteCarloSimulator({
         return date.toISOString().split('T')[0];
     };
 
-    // Handle date input change
-    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newDate = new Date(e.target.value);
-        setDeadlineDate(newDate);
-    };
-
     return (
         <div className="monte-carlo-simulator">
-            <div className="field">
-                <label className="label">Paste your JSON (array of slices)</label>
-                <div className="control">
-          <textarea
-              className="textarea"
-              rows={10}
-              value={jsonInput}
-              onChange={e => setJsonInput(e.target.value)}
-              placeholder='[{"title": "Slice A"}, {"title": "Slice B"}]'
-          />
-                </div>
-                <button className="button is-link mt-2" onClick={parseJson}>
-                    Load Slices
-                </button>
-                {error && <p className="help is-danger">{error}</p>}
-            </div>
+            <div className="box">
+                <h3 className="subtitle">Project Parameters</h3>
 
-            {slices.length > 0 && (
-                <>
-                    <div className="box">
-                        <div className="columns">
-                            <div className="column">
-                                <div className="notification is-info">
-                                    <p><strong>Number of Slices:</strong> {slices.length}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="field">
-                            <label className="label">Deadline Date</label>
-                            <div className="control">
+                <div className="field">
+                    <label className="label">Story Count Range</label>
+                    <div className="columns">
+                        <div className="column">
+                            <div className="field">
+                                <label className="label is-small">Minimum</label>
                                 <input
-                                    type="date"
                                     className="input"
-                                    value={formatDateForInput(deadlineDate)}
-                                    onChange={handleDateChange}
-                                    min={formatDateForInput(new Date())}
+                                    type="number"
+                                    value={storyCountMin}
+                                    onChange={e => setStoryCountMin(Number(e.target.value))}
+                                    min="1"
                                 />
                             </div>
-                            <p className="help">Target date: {formattedDeadlineDate} ({daysUntilDeadline} days from now)</p>
                         </div>
-
-                        <div className="field">
-                            <label className="label">Cycle Time (per slice, days)</label>
-                            <input
-                                className="input"
-                                type="number"
-                                value={cycleTime}
-                                step="0.1"
-                                onChange={e => setCycleTime(Number(e.target.value))}
-                            />
-                        </div>
-
-                        <div className="field">
-                            <label className="label">Global Risk (0 to 1)</label>
-                            <input
-                                className="input"
-                                type="number"
-                                value={globalRisk}
-                                step="0.01"
-                                onChange={e => setGlobalRisk(Number(e.target.value))}
-                            />
+                        <div className="column">
+                            <div className="field">
+                                <label className="label is-small">Maximum</label>
+                                <input
+                                    className="input"
+                                    type="number"
+                                    value={storyCountMax}
+                                    onChange={e => setStoryCountMax(Number(e.target.value))}
+                                    min={storyCountMin}
+                                />
+                            </div>
                         </div>
                     </div>
+                </div>
 
+                <div className="field">
+                    <label className="label">Story Split Factor Range</label>
+                    <div className="columns">
+                        <div className="column">
+                            <div className="field">
+                                <label className="label is-small">Minimum</label>
+                                <input
+                                    className="input"
+                                    type="number"
+                                    value={storySplitMin}
+                                    onChange={e => setStorySplitMin(Number(e.target.value))}
+                                    min="0.1"
+                                    step="0.1"
+                                />
+                            </div>
+                        </div>
+                        <div className="column">
+                            <div className="field">
+                                <label className="label is-small">Maximum</label>
+                                <input
+                                    className="input"
+                                    type="number"
+                                    value={storySplitMax}
+                                    onChange={e => setStorySplitMax(Number(e.target.value))}
+                                    min={storySplitMin}
+                                    step="0.1"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="field">
+                    <label className="label">Historic Throughput (story points per sprint, comma-separated)</label>
+                    <input
+                        className="input"
+                        type="text"
+                        value={throughputInput}
+                        onChange={e => setThroughputInput(e.target.value)}
+                        placeholder="10, 12, 8, 15, 11"
+                    />
+                    <p className="help">Enter your team's historical throughput values separated by commas</p>
+                </div>
+
+                <div className="field">
+                    <label className="label">Sprint Length (days)</label>
+                    <input
+                        className="input"
+                        type="number"
+                        value={sprintLengthDays}
+                        onChange={e => setSprintLengthDays(Number(e.target.value))}
+                        min="1"
+                    />
+                </div>
+
+                <div className="columns">
+                    <div className="column">
+                        <div className="field">
+                            <label className="label">Start Date</label>
+                            <input
+                                type="date"
+                                className="input"
+                                value={formatDateForInput(startDate)}
+                                onChange={e => setStartDate(new Date(e.target.value))}
+                            />
+                            <p className="help">Project start: {formattedStartDate}</p>
+                        </div>
+                    </div>
+                    <div className="column">
+                        <div className="field">
+                            <label className="label">Deadline Date</label>
+                            <input
+                                type="date"
+                                className="input"
+                                value={formatDateForInput(deadlineDate)}
+                                onChange={e => setDeadlineDate(new Date(e.target.value))}
+                                min={formatDateForInput(startDate)}
+                            />
+                            <p className="help">Target date: {formattedDeadlineDate} ({daysUntilDeadline} days from now)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="field">
+                <div className="control">
                     <button className="button is-primary" onClick={simulateRun}>
                         Run Simulation
                     </button>
-                </>
-            )}
+                </div>
+                {error && <p className="help is-danger">{error}</p>}
+            </div>
 
             {result && (
                 <>
@@ -160,22 +216,39 @@ export default function MonteCarloSimulator({
                             durations={result.durations}
                             deadlineDays={result.deadlineDays}
                             probability={result.probability}
+                            sprintResults={result.sprintResults}
+                            sprintLengthDays={sprintLengthDays}
                         />
                     </div>
 
                     <div className="notification is-info mt-4">
                         <h3 className="subtitle">Detailed Results</h3>
-                        <p><strong>Number of Slices:</strong> {result.sliceCount}</p>
-                        <p><strong>Deadline:</strong> {formattedDeadlineDate} ({result.deadlineDays} days from now)</p>
-                        <p><strong>Average Total Time:</strong> {result.average} days</p>
-                        <p><strong>90th Percentile Time:</strong> {result.p90} days</p>
+                        <div className="columns">
+                            <div className="column">
+                                <p><strong>Story Count Range:</strong> {storyCountMin} - {storyCountMax}</p>
+                                <p><strong>Story Split Factor:</strong> {storySplitMin} - {storySplitMax}</p>
+                                <p><strong>Sprint Length:</strong> {sprintLengthDays} days</p>
+                            </div>
+                            <div className="column">
+                                <p><strong>Start Date:</strong> {formattedStartDate}</p>
+                                <p><strong>Deadline:</strong> {formattedDeadlineDate} ({result.deadlineDays} days from start)</p>
+                                <p><strong>Probability to Meet Deadline:</strong> {(result.probability * 100).toFixed(1)}%</p>
+                            </div>
+                        </div>
                         <hr />
-                        <p><strong>Expected Delivery Date:</strong> {formatDate(result.expectedDate)}</p>
-                        <p><strong>90% Confidence Delivery Date:</strong> {formatDate(result.p90Date)}</p>
+                        <div className="columns">
+                            <div className="column">
+                                <p><strong>Average Completion Time:</strong> {result.average} days</p>
+                                <p><strong>90th Percentile Time:</strong> {result.p90} days</p>
+                            </div>
+                            <div className="column">
+                                <p><strong>Expected Delivery Date:</strong> {formatDate(result.expectedDate)}</p>
+                                <p><strong>90% Confidence Delivery Date:</strong> {formatDate(result.p90Date)}</p>
+                            </div>
+                        </div>
                     </div>
                 </>
             )}
-
         </div>
     );
 }

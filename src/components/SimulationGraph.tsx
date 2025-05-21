@@ -1,55 +1,23 @@
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, LineElement } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
 // Register Chart.js components
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
 
 interface SimulationGraphProps {
     durations: number[];
     deadlineDays: number;
     probability: number;
+    completionResults: Record<number, number>;
+    totalSimulations: number;
 }
 
-const SimulationGraph = ({ durations, deadlineDays, probability }: SimulationGraphProps) => {
-    // Create histogram data from durations
-    const createHistogram = () => {
-        // Find min and max values
-        const min = Math.floor(Math.min(...durations));
-        const max = Math.ceil(Math.max(...durations));
-
-        // Create bins (we'll use 15 bins or less if the range is small)
-        const binCount = Math.min(15, max - min + 1);
-        const binSize = (max - min) / binCount;
-
-        // Initialize bins
-        const bins = Array(binCount).fill(0);
-        const labels = Array(binCount).fill(0).map((_, i) =>
-            Math.round((min + i * binSize + min + (i + 1) * binSize) / 2)
-        );
-
-        // Fill bins
-        durations.forEach(duration => {
-            const binIndex = Math.min(
-                Math.floor((duration - min) / binSize),
-                binCount - 1
-            );
-            bins[binIndex]++;
-        });
-
-        return { bins, labels };
-    };
-
-    const { bins, labels } = createHistogram();
-
+const SimulationGraph = ({
+                             deadlineDays,
+                             probability,
+                             completionResults,
+                             totalSimulations
+                         }: SimulationGraphProps) => {
     // Determine status color based on probability
     const getStatusColor = (prob: number) => {
         if (prob >= 0.8) return '#4caf50'; // Green for high probability
@@ -59,51 +27,57 @@ const SimulationGraph = ({ durations, deadlineDays, probability }: SimulationGra
 
     const statusColor = getStatusColor(probability);
 
-    // Create background colors with different color for bins after deadline
-    const backgroundColor = labels.map(label =>
-        label <= deadlineDays ? 'rgba(75, 192, 192, 0.6)' : 'rgba(255, 99, 132, 0.6)'
+    // Convert completion results to chart data
+    const dayLabels = Object.keys(completionResults).sort((a, b) => parseInt(a) - parseInt(b));
+    const dayCounts = dayLabels.map(day => completionResults[parseInt(day)]);
+
+    // Calculate cumulative probability
+    let cumulativeCount = 0;
+    const cumulativeProbabilities = dayCounts.map(count => {
+        cumulativeCount += count;
+        return (cumulativeCount / totalSimulations) * 100;
+    });
+
+    // Create background colors with different color for days after deadline
+    const backgroundColor = dayLabels.map(day =>
+        parseInt(day) <= deadlineDays ? 'rgba(75, 192, 192, 0.6)' : 'rgba(255, 99, 132, 0.6)'
     );
 
-    // Find the index where the deadline falls
-    const deadlineIndex = labels.findIndex(label => label >= deadlineDays);
-
+    // Fix: Use the correct data structure for Chart.js
     const data = {
-        labels: labels.map(l => l.toString()),
+        labels: dayLabels.map(day => `Day ${day}`),
         datasets: [
             {
-                label: 'Distribution of Completion Times',
-                data: bins,
+                label: 'Number of Simulations',
+                data: dayCounts,
                 backgroundColor,
-                borderColor: labels.map(label =>
-                    label <= deadlineDays ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'
+                borderColor: dayLabels.map(day =>
+                    parseInt(day) <= deadlineDays ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'
                 ),
                 borderWidth: 1,
             }
         ],
     };
 
+    // Create a separate chart for the cumulative line
     const options = {
         responsive: true,
         plugins: {
             legend: {
-                display: false
+                position: 'top' as const,
             },
             title: {
                 display: true,
-                text: 'Will we meet the deadline?',
+                text: 'Completion Forecast',
                 font: {
                     size: 18
                 }
             },
             tooltip: {
                 callbacks: {
-                    title: (items: any[]) => {
-                        if (!items.length) return '';
-                        const index = items[0].dataIndex;
-                        return `Around ${labels[index]} days`;
-                    },
-                    label: (context: any) => {
-                        return `Frequency: ${context.raw} simulations`;
+                    label: (context) => {
+                        const value = context.parsed.y;
+                        return `Simulations: ${value} (${((value / totalSimulations) * 100).toFixed(1)}%)`;
                     }
                 }
             }
@@ -112,21 +86,13 @@ const SimulationGraph = ({ durations, deadlineDays, probability }: SimulationGra
             x: {
                 title: {
                     display: true,
-                    text: 'Days to Complete'
-                },
-                grid: {
-                    color: (context: any) => {
-                        return context.tick.value === deadlineIndex ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.1)';
-                    },
-                    lineWidth: (context: any) => {
-                        return context.tick.value === deadlineIndex ? 2 : 1;
-                    }
+                    text: 'Days to Completion'
                 }
             },
             y: {
                 title: {
                     display: true,
-                    text: 'Frequency'
+                    text: 'Number of Simulations'
                 }
             }
         }
@@ -136,15 +102,15 @@ const SimulationGraph = ({ durations, deadlineDays, probability }: SimulationGra
         <div>
             <div className="columns">
                 <div className="column is-one-third">
-                    <div className="box has-text-centered" style={{ backgroundColor: statusColor, color: 'white' }}>
-                        <h2 className="title is-2" style={{ color: 'white' }}>{(probability * 100).toFixed(0)}%</h2>
-                        <p className="subtitle is-5" style={{ color: 'white' }}>Chance of Meeting Deadline</p>
+                    <div className="box has-text-centered" style={{ backgroundColor: statusColor }}>
+                        <h2 className="title is-2" style={{ color: '#ffffff' }}>{(probability * 100).toFixed(0)}%</h2>
+                        <p className="subtitle is-5" style={{ color: '#ffffff' }}>Chance of Meeting Deadline</p>
                     </div>
                 </div>
                 <div className="column">
-                    <div className="notification" style={{ backgroundColor: probability >= 0.5 ? '#e8f5e9' : '#ffebee' }}>
+                    <div>
                         <p className="is-size-5">
-                            <strong>Executive Summary:</strong> Based on {durations.length.toLocaleString()} simulations, we have a
+                            <strong>Executive Summary:</strong> Based on {totalSimulations.toLocaleString()} simulations, we have a
                             <strong> {(probability * 100).toFixed(0)}% chance</strong> of completing this project by the deadline.
                         </p>
                         <p className="mt-2">
@@ -159,6 +125,15 @@ const SimulationGraph = ({ durations, deadlineDays, probability }: SimulationGra
             </div>
 
             <Bar data={data} options={options} />
+
+            {/* Add a separate section for the cumulative probability */}
+            <div className="mt-4">
+                <p className="has-text-centered">
+                    <strong>Cumulative Probability at Deadline:</strong> {
+                    cumulativeProbabilities[dayLabels.findIndex(day => parseInt(day) > deadlineDays) - 1]?.toFixed(1) || '0'
+                }%
+                </p>
+            </div>
         </div>
     );
 };
