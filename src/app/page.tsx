@@ -164,7 +164,6 @@ export default function Home() {
                                         <label className="label">Start Date</label>
                                         <input
                                             type="date"
-                                            className="input"
                                             value={formatDateForInput(startDate)}
                                             onChange={e => setStartDate(new Date(e.target.value))}
                                         />
@@ -176,7 +175,6 @@ export default function Home() {
                                         <label className="label">Deadline Date</label>
                                         <input
                                             type="date"
-                                            className="input"
                                             value={formatDateForInput(deadlineDate)}
                                             onChange={e => setDeadlineDate(new Date(e.target.value))}
                                             min={formatDateForInput(startDate)}
