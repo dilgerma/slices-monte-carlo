@@ -12,9 +12,13 @@ function corsHeaders() {
 
 // Handle OPTIONS requests (preflight)
 export async function OPTIONS() {
-    return NextResponse.json(null, {
-        headers: corsHeaders(),
+    return new NextResponse(null, {
         status: 204,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+        },
     });
 }
 
