@@ -21,7 +21,6 @@ export default function Home() {
 
     const [jsonInput, setJsonInput] = useState('');
     const [slices, setSlices] = useState<any[]>([]);
-    const [apiMode, setApiMode] = useState(false)
     const [deadlineDate, setDeadlineDate] = useState<Date>(() => {
         // Default to 30 days from now
         const date = new Date();
