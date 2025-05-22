@@ -18,7 +18,7 @@ export async function GET(
     });
   }
 
-  const id = params.id;
+  const id = params.params.id;
   console.log(`Loading ${id}`)
   const data = getData(id);
 
