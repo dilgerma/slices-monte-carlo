@@ -100,7 +100,7 @@ export default function Home() {
     return (
       <section className="section">
         <div className="container">
-          <h1 className="title">Monte Carlo Deadline Simulator</h1>
+          <h1 className="title">Project Confidence Level - Calculator</h1>
           <p className="subtitle">Predict project completion dates based on slices and historical throughput</p>
 
           <div className="field">
@@ -301,7 +301,19 @@ export default function Home() {
                   completionResults={result.completionResults}
                   totalSimulations={result.totalSimulations}
                 />
-
+                  <DetailedResults
+                      result={result}
+                      sliceCountMin={sliceCountMin}
+                      sliceCountMax={sliceCountMax}
+                      splitFactorMin={splitFactorMin}
+                      splitFactorMax={splitFactorMax}
+                      throughputMin={throughputMin}
+                      throughputMax={throughputMax}
+                      uncertaintyFactor={uncertaintyFactor}
+                      formattedStartDate={formattedStartDate}
+                      formattedDeadlineDate={formattedDeadlineDate}
+                      formatDate={formatDate}
+                  />
                 <CompletionDistribution
                   completionResults={result.completionResults}
                   totalSimulations={result.totalSimulations}
@@ -311,19 +323,7 @@ export default function Home() {
                 />
               </div>
 
-              <DetailedResults
-                result={result}
-                sliceCountMin={sliceCountMin}
-                sliceCountMax={sliceCountMax}
-                splitFactorMin={splitFactorMin}
-                splitFactorMax={splitFactorMax}
-                throughputMin={throughputMin}
-                throughputMax={throughputMax}
-                uncertaintyFactor={uncertaintyFactor}
-                formattedStartDate={formattedStartDate}
-                formattedDeadlineDate={formattedDeadlineDate}
-                                formatDate={formatDate}
-                            />
+
             </>
           )}
         </div>
