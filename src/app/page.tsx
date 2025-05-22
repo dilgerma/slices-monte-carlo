@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import SimulationGraph from '@/components/SimulationGraph';
 import CompletionDistribution from '@/components/CompletionDistribution';
 import DetailedResults from '@/components/DetailedResults';
@@ -13,16 +13,38 @@ import {
     parseThroughputValues,
     calculateSliceCountRange
 } from '@/lib/utils';
+import {useSearchParams} from "next/navigation";
 
 export default function Home() {
     const [jsonInput, setJsonInput] = useState('');
     const [slices, setSlices] = useState<any[]>([]);
+    const [apiMode, setApiMode] = useState(false)
     const [deadlineDate, setDeadlineDate] = useState<Date>(() => {
       // Default to 30 days from now
       const date = new Date();
       date.setDate(date.getDate() + 30);
       return date;
     });
+    // Inside your component:
+    const searchParams = useSearchParams();
+    const dataId = searchParams.get('id');
+    useEffect(() => {
+        if (dataId) {
+            fetch(`/api/data/${dataId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch data');
+                    return response.json();
+                })
+                .then(data => {
+                   setJsonInput(JSON.stringify(data))
+                    setApiMode(true)
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+
+        }
+    }, [dataId]);
 
     // Parameters for Monte Carlo simulation
     const [sliceCountMin, setSliceCountMin] = useState(0); // Will be set based on JSON input
@@ -45,6 +67,7 @@ export default function Home() {
     const [result, setResult] = useState<any | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+
     const parseJson = () => {
       const { slices: loadedSlices, error: parseError } = parseJsonSlices(jsonInput);
 
@@ -62,6 +85,12 @@ export default function Home() {
 
       setError(null);
     };
+
+    useEffect(() => {
+        if (apiMode) {
+            simulateRun()
+        }
+    }, [apiMode, jsonInput]);
 
     const simulateRun = () => {
       try {
@@ -103,7 +132,7 @@ export default function Home() {
           <h1 className="title">Project Confidence Level - Calculator</h1>
           <p className="subtitle">Predict project completion dates based on slices and historical throughput</p>
 
-          <div className="field">
+            {!apiMode ? <div className="field">
             <label className="label">Paste your JSON (array of slices)</label>
             <div className="control">
               <textarea
@@ -118,7 +147,7 @@ export default function Home() {
               Load Slices
             </button>
             {error && <p className="help is-danger">{error}</p>}
-                    </div>
+                    </div> : <span/>}
 
           {slices.length > 0 && (
             <>
