@@ -38,7 +38,6 @@ export default function Home() {
                 })
                 .then(data => {
                     setJsonInput(JSON.stringify(data))
-                    setApiMode(true)
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
