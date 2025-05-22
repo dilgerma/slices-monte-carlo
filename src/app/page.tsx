@@ -126,6 +126,7 @@ export default function Home() {
                 <h1 className="title">Monaco Slicing</h1>
                 <p className="subtitle">Predict project completion dates based on slices and historical throughput</p>
 
+                {!slices || slices?.length == 0 ?
                 <div className="field">
                     <label className="label">Paste your JSON (array of slices)</label>
                     <div className="control">
@@ -137,11 +138,11 @@ export default function Home() {
                   placeholder='{"slices": [{"title": "Slice A"}, {"title": "Slice B"}]}'
               />
                     </div>
-                    <button className="button is-link mt-2" onClick={parseJson}>
+                     <button className="button is-link mt-2" onClick={parseJson}>
                         Load Slices
                     </button>
                     {error && <p className="help is-danger">{error}</p>}
-                </div>
+                </div> : <span/>}
 
                 {slices.length > 0 && (
                     <>
