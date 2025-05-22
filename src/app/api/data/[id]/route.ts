@@ -19,6 +19,7 @@ export async function GET(
   }
 
   const id = params.id;
+  console.log(`Loading ${id}`)
   const data = getData(id);
 
   if (!data) {

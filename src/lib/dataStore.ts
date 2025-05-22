@@ -8,8 +8,7 @@ interface StoredData {
 
 // In-memory storage with expiration (30 minutes)
 const dataStore = new Map<string, StoredData>();
-const EXPIRATION_MS = 30 * 60 * 1000; // 30 minutes
-
+const EXPIRATION_MS = 30*1000
 // Clean up expired data every 5 minutes
 setInterval(() => {
   const now = Date.now();
@@ -32,6 +31,7 @@ export function storeData(data: any): string {
 
 export function getData(id: string): any | null {
   const entry = dataStore.get(id);
+  console.log(`id in datastore ${id} - ${JSON.stringify(entry)}`);
   if (!entry) return null;
 
   // Check if data has expired
