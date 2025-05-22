@@ -3,7 +3,7 @@ import { getData } from '@/lib/dataStore';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  params: any
 ) {
 
   const headers = new Headers();
