@@ -1,20 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storeData } from '@/lib/dataStore';
 
+// Helper function to add CORS headers
+function corsHeaders() {
+    return {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+    };
+}
+
+// Handle OPTIONS requests (preflight)
+export async function OPTIONS(request: NextRequest) {
+    return NextResponse.json(null, {
+        headers: corsHeaders(),
+        status: 204,
+    });
+}
+
+export async function GET(request: NextRequest) {
+    return NextResponse.json({ message: 'GET method supported' }, {
+        headers: corsHeaders(),
+        status: 200,
+    });
+}
+
 export async function POST(request: NextRequest) {
-
-    const headers = new Headers();
-    headers.set('Access-Control-Allow-Origin', '*');
-    headers.set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-    headers.set('Access-Control-Allow-Headers', 'Content-Type');
-    // Handle preflight OPTIONS request
-    if (request.method === 'OPTIONS') {
-        return NextResponse.json(null, {
-            headers,
-            status: 204,
-        });
-    }
-
     try {
         // Get the JSON data from the request
         const body = await request.json();
@@ -22,9 +33,20 @@ export async function POST(request: NextRequest) {
         // Store the data and get a UUID
         const dataId = storeData(body);
 
-        // Redirect to the main page with just the UUID
-        return NextResponse.redirect(new URL(`/?id=${dataId}`, request.url),{headers, status: 200});
+        // Instead of redirecting, return JSON with the ID and URL
+        // This avoids CORS issues with redirects
+        return NextResponse.json(
+            {
+                success: true,
+                dataId,
+                url: `/?id=${dataId}`
+            },
+            { headers: corsHeaders(), status: 200 }
+        );
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { headers, status: 500 });
+        return NextResponse.json(
+            { error: error.message },
+            { headers: corsHeaders(), status: 500 }
+        );
     }
 }
