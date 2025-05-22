@@ -21,6 +21,7 @@ export default function Home() {
 
     const [jsonInput, setJsonInput] = useState('');
     const [slices, setSlices] = useState<any[]>([]);
+    const [filterSlices, setFilterSlices] = useState<any[]>([])
     const [deadlineDate, setDeadlineDate] = useState<Date>(() => {
         // Default to 30 days from now
         const date = new Date();
@@ -57,6 +58,8 @@ export default function Home() {
 
     const [startDate, setStartDate] = useState<Date>(new Date());
 
+    const [includeDoneSlices, setIncludeDoneSlices] = useState(false)
+
     // Throughput range (slices per week)
     const [throughputMin, setThroughputMin] = useState(3); // Minimum slices per week
     const [throughputMax, setThroughputMax] = useState(5); // Maximum slices per week
@@ -67,6 +70,9 @@ export default function Home() {
     const [result, setResult] = useState<any | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    useEffect(() => {
+        setFilterSlices(slices.filter((it)=>includeDoneSlices ? true : it.status !== "Done"))
+    }, [includeDoneSlices, slices]);
 
     const parseJson = () => {
         const {slices: loadedSlices, error: parseError} = parseJsonSlices(jsonInput);
@@ -126,7 +132,7 @@ export default function Home() {
                 <h1 className="title">Monaco Slicing</h1>
                 <p className="subtitle">Predict project completion dates based on slices and historical throughput</p>
 
-                {!slices || slices?.length == 0 ?
+                {!filterSlices || filterSlices?.length == 0 ?
                 <div className="field">
                     <label className="label">Paste your JSON (array of slices)</label>
                     <div className="control">
@@ -144,14 +150,15 @@ export default function Home() {
                     {error && <p className="help is-danger">{error}</p>}
                 </div> : <span/>}
 
-                {slices.length > 0 && (
+                {filterSlices.length > 0 && (
                     <>
                         <div className="box">
                             <div className="notification is-info">
-                                <p><strong>Loaded Slices:</strong> {slices.length}</p>
+                                <p><strong>Loaded Slices:</strong> {filterSlices.length}</p>
                             </div>
 
                             <div className="columns">
+
                                 <div className="column">
                                     <div className="field">
                                         <label className="label">Start Date</label>
@@ -179,6 +186,17 @@ export default function Home() {
                                         <p className="help">Weeks from now: {(daysUntilDeadline / 7).toFixed(1)}</p>
                                         <p className="help">Working
                                             Days: {calculateWorkingDays(startDate, deadlineDate)}</p>
+                                    </div>
+                                </div>
+                                <div className="column">
+                                    <div className="field">
+                                        <label className="label">Include Done Slices</label>
+                                        <input
+                                            type="checkbox"
+                                            className="checkbox"
+                                            checked={includeDoneSlices}
+                                            onChange={evt => setIncludeDoneSlices(evt.target.checked)}
+                                        />
                                     </div>
                                 </div>
                             </div>
