@@ -22,6 +22,7 @@ setInterval(() => {
 
 export function storeData(data: any): string {
   const id = uuidv4();
+  console.log(`id ${id}`)
   dataStore.set(id, {
     data,
     timestamp: Date.now()
