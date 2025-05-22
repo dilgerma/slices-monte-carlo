@@ -16,3 +16,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.has-background-danger-light {
+  color:black !important;
+}
