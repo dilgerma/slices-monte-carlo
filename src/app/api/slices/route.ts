@@ -11,14 +11,14 @@ function corsHeaders() {
 }
 
 // Handle OPTIONS requests (preflight)
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
     return NextResponse.json(null, {
         headers: corsHeaders(),
         status: 204,
     });
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     return NextResponse.json({ message: 'GET method supported' }, {
         headers: corsHeaders(),
         status: 200,
