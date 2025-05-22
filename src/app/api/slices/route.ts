@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
             {
                 success: true,
                 dataId,
-                url: `/?id=${dataId}`
+                url: `https://monaco-slicing.nebulit.de/?id=${dataId}`
             },
             { headers: corsHeaders(), status: 200 }
         );
