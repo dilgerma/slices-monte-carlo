@@ -90,7 +90,7 @@ export default function Home() {
         if (apiMode) {
             simulateRun()
         }
-    }, [apiMode, jsonInput]);
+    }, [apiMode, jsonInput, simulateRun]);
 
     const simulateRun = () => {
       try {
