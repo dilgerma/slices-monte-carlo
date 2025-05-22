@@ -5,6 +5,19 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+
+  const headers = new Headers();
+  headers.set('Access-Control-Allow-Origin', '*');
+  headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return NextResponse.json(null, {
+      headers,
+      status: 204,
+    });
+  }
+
   const id = params.id;
   const data = getData(id);
 
@@ -15,5 +28,5 @@ export async function GET(
     );
   }
 
-  return NextResponse.json(data);
+  return NextResponse.json(data,{headers, status: 200});
 }
