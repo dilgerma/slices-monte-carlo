@@ -230,7 +230,7 @@ export default function Home() {
                     onChange={e => setThroughputInput(e.target.value)}
                     placeholder="5, 6, 4, 7, 5"
                   />
-                  <p className="help">Enter your team's historical throughput in slices per week</p>
+                  <p className="help">Enter your teams historical throughput in slices per week</p>
                 </div>
 
                 <div className="field">

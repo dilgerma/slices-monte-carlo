@@ -75,7 +75,7 @@ const SimulationGraph = ({
             },
             tooltip: {
                 callbacks: {
-                    label: (context) => {
+                    label: (context:any) => {
                         const value = context.parsed.y;
                         return `Simulations: ${value} (${((value / totalSimulations) * 100).toFixed(1)}%)`;
                     }
