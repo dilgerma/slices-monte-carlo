@@ -25,6 +25,6 @@ export async function POST(request: NextRequest) {
         // Redirect to the main page with just the UUID
         return NextResponse.redirect(new URL(`/?id=${dataId}`, request.url),{headers, status: 200});
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { headers, status: 500 });
     }
 }
