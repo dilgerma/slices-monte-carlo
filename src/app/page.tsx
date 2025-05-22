@@ -50,7 +50,7 @@ export default function Home() {
     const [sliceCountMin, setSliceCountMin] = useState(0); // Will be set based on JSON input
     const [sliceCountMax, setSliceCountMax] = useState(0); // Will be set based on JSON input
     const [splitFactorMin, setSplitFactorMin] = useState(1.0);
-    const [splitFactorMax, setSplitFactorMax] = useState(1.5);
+    const [splitFactorMax, setSplitFactorMax] = useState(1.2);
 
     // Historical throughput (slices per week)
     const [throughputInput, setThroughputInput] = useState('5, 6, 4, 7, 5'); // Slices per week
@@ -59,10 +59,10 @@ export default function Home() {
 
     // Throughput range (slices per week)
     const [throughputMin, setThroughputMin] = useState(3); // Minimum slices per week
-    const [throughputMax, setThroughputMax] = useState(7); // Maximum slices per week
+    const [throughputMax, setThroughputMax] = useState(5); // Maximum slices per week
 
     // Global uncertainty factor
-    const [uncertaintyFactor, setUncertaintyFactor] = useState(0.2); // 20% uncertainty by default
+    const [uncertaintyFactor, setUncertaintyFactor] = useState(0.1); // 20% uncertainty by default
 
     const [result, setResult] = useState<any | null>(null);
     const [error, setError] = useState<string | null>(null);
