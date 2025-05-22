@@ -24,7 +24,7 @@ export async function GET(
   if (!data) {
     return NextResponse.json(
       { error: 'Data not found or expired' },
-      { status: 404 }
+      { headers, status: 404 }
     );
   }
 

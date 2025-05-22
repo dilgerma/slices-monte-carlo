@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
 
     const headers = new Headers();
     headers.set('Access-Control-Allow-Origin', '*');
-    headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    headers.set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
     headers.set('Access-Control-Allow-Headers', 'Content-Type');
     // Handle preflight OPTIONS request
     if (request.method === 'OPTIONS') {
