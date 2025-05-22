@@ -11,7 +11,7 @@ export async function GET(
   headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
   headers.set('Access-Control-Allow-Headers', 'Content-Type');
   // Handle preflight OPTIONS request
-  if (req.method === 'OPTIONS') {
+  if (request.method === 'OPTIONS') {
     return NextResponse.json(null, {
       headers,
       status: 204,
