@@ -83,7 +83,7 @@ export default function Home() {
         }
 
         setSlices(loadedSlices);
-        let openSlices = loadedSlices.filter(it => it.status !== "Done")
+        const openSlices = loadedSlices.filter(it => it.status !== "Done")
         setFilterSlices(openSlices);
 
         // Set slice count range based on loaded slices
