@@ -31,7 +31,6 @@ export function storeData(data: any): string {
 
 export function getData(id: string): any | null {
   const entry = dataStore.get(id);
-  console.log(`id in datastore ${id} - ${JSON.stringify(entry)}`);
   if (!entry) return null;
 
   // Check if data has expired
