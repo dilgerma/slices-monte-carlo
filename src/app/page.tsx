@@ -21,6 +21,7 @@ export default function Home() {
 
     const [jsonInput, setJsonInput] = useState('');
     const [slices, setSlices] = useState<any[]>([]);
+    const [forecasts, setForecasts] = useState<any[]>([]);
     const [filterSlices, setFilterSlices] = useState<any[]>([])
     const [deadlineDate, setDeadlineDate] = useState<Date>(() => {
         // Default to 30 days from now
@@ -80,16 +81,16 @@ export default function Home() {
         setSliceCountMax(max >= min ? max : min);
     }, [includeDoneSlices, slices]);
 
-    const parseJson = (jsonInput: string ) => {
-        const {slices: loadedSlices, error: parseError} = parseJsonSlices(jsonInput);
-
+    const parseJson = (jsonInput:any) => {
+        const {slices: loadedSlices, error: parseError, forecasts: forecasts} = parseJsonSlices(jsonInput);
         if (parseError) {
             setError(parseError);
             return;
         }
 
         setSlices(loadedSlices);
-        const openSlices = loadedSlices.filter(it => it.status !== "Done")
+        setForecasts(forecasts)
+        const openSlices = loadedSlices.filter(it => it.status !== "Done").filter(it => forecasts.some(forecast => !(it.slices.includes(it.title) && forecast.exclude)))
         setFilterSlices(openSlices);
 
         // Set slice count range based on loaded slices

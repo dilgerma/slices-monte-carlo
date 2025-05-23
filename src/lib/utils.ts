@@ -26,7 +26,7 @@ export const formatDateForInput = (date: Date): string => {
 };
 
 // Parse JSON input for slices
-export const parseJsonSlices = (jsonInput: string): { slices: any[], error: string | null } => {
+export const parseJsonSlices = (jsonInput: string): { forecasts: any[], slices: any[], error: string | null } => {
     try {
         const data = JSON.parse(jsonInput);
         if (!Array.isArray(data.slices)) throw new Error('JSON must be an array of slices.');
@@ -34,10 +34,12 @@ export const parseJsonSlices = (jsonInput: string): { slices: any[], error: stri
 
         return {
             slices: data.slices,
+            forecasts: data.forecasts || [],
             error: null
         };
     } catch (e: any) {
         return {
+            forecasts: [],
             slices: [],
             error: e.message
         };
