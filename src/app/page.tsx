@@ -80,7 +80,7 @@ export default function Home() {
         const {min, max} = calculateSliceCountRange(openSlices.length);
         setSliceCountMin(isNaN(min) ? 0 : min);
         setSliceCountMax(max >= min ? max : min);
-    }, [includeDoneSlices, slices]);
+    }, [includeDoneSlices, slices, forecasts]);
 
     const parseJson = (jsonInput:any) => {
         const {slices: loadedSlices, error: parseError, forecasts: forecasts} = parseJsonSlices(jsonInput);
