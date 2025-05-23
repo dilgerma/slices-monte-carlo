@@ -56,6 +56,6 @@ export const parseThroughputValues = (throughputInput: string): number[] => {
 export const calculateSliceCountRange = (sliceCount: number): { min: number, max: number } => {
     return {
         min: sliceCount, // 90% of current count as minimum
-        max: Math.ceil(sliceCount * 1.1) // 110% of current count as maximum
+        max: sliceCount // 110% of current count as maximum
     };
 };

@@ -85,7 +85,7 @@ export default function Home() {
         setSlices(loadedSlices);
 
         // Set slice count range based on loaded slices
-        const {min, max} = calculateSliceCountRange(loadedSlices.length);
+        const {min, max} = calculateSliceCountRange(filterSlices.length);
         setSliceCountMin(min);
         setSliceCountMax(max);
 
