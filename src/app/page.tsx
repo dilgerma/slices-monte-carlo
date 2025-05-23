@@ -83,6 +83,7 @@ export default function Home() {
         }
 
         setSlices(loadedSlices);
+        setFilterSlices(loadedSlices.filter(it => it.status !== "Done"));
 
         // Set slice count range based on loaded slices
         const {min, max} = calculateSliceCountRange(filterSlices.length);
