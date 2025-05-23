@@ -38,7 +38,9 @@ export default function Home() {
                     return response.json();
                 })
                 .then(data => {
-                    setJsonInput(JSON.stringify(data))
+                    const jsonValue = JSON.stringify(data)
+                    setJsonInput(jsonValue)
+                    parseJson(jsonValue)
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
@@ -78,7 +80,7 @@ export default function Home() {
         setSliceCountMax(max >= min ? max : min);
     }, [includeDoneSlices, slices]);
 
-    const parseJson = () => {
+    const parseJson = (jsonInput: string ) => {
         const {slices: loadedSlices, error: parseError} = parseJsonSlices(jsonInput);
 
         if (parseError) {
@@ -150,7 +152,7 @@ export default function Home() {
                   placeholder='{"slices": [{"title": "Slice A"}, {"title": "Slice B"}]}'
               />
                     </div>
-                     <button className="button is-link mt-2" onClick={parseJson}>
+                     <button className="button is-link mt-2" onClick={()=>{parseJson(jsonInput)}}>
                         Load Slices
                     </button>
                     {error && <p className="help is-danger">{error}</p>}
