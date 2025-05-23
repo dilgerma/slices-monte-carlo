@@ -71,7 +71,11 @@ export default function Home() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        setFilterSlices(slices.filter((it)=>includeDoneSlices ? true : it.status !== "Done"))
+        const openSlices = slices.filter((it)=>includeDoneSlices ? true : it.status !== "Done")
+        setFilterSlices(openSlices)
+        const {min, max} = calculateSliceCountRange(openSlices.length);
+        setSliceCountMin(min);
+        setSliceCountMax(max);
     }, [includeDoneSlices, slices]);
 
     const parseJson = () => {
