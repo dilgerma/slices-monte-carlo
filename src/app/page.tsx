@@ -74,8 +74,8 @@ export default function Home() {
         const openSlices = slices.filter((it)=>includeDoneSlices ? true : it.status !== "Done")
         setFilterSlices(openSlices)
         const {min, max} = calculateSliceCountRange(openSlices.length);
-        setSliceCountMin(min);
-        setSliceCountMax(max);
+        setSliceCountMin(isNaN(min) ? 0 : min);
+        setSliceCountMax(max >= min ? max : min);
     }, [includeDoneSlices, slices]);
 
     const parseJson = () => {

@@ -20,6 +20,10 @@ export function monteCarloForecastCompletionTime(
     throw new Error('Cycle time data is required');
   }
 
+  if(splitFactorMax < splitFactorMin) {
+    splitFactorMax = splitFactorMin
+  }
+
   const results: number[] = [];
   const completionResults: { [key: number]: number } = {};
 
@@ -198,7 +202,7 @@ export function monteCarloThroughputSimulation(params: {
       weeklyThroughput = weeklyThroughput * (1 - uncertaintyReduction);
 
       // Process one week's worth of slices
-      remainingSlices -= weeklyThroughput;
+      remainingSlices -= Math.ceil(weeklyThroughput);
       weeks += 1;
 
       // If we've completed all slices (or more), stop
