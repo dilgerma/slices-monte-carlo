@@ -21,6 +21,7 @@ export default function Home() {
 
     const [jsonInput, setJsonInput] = useState('');
     const [slices, setSlices] = useState<any[]>([]);
+    const [forecasts, setForecasts] = useState<any[]>([]);
     const [filterSlices, setFilterSlices] = useState<any[]>([])
     const [deadlineDate, setDeadlineDate] = useState<Date>(() => {
         // Default to 30 days from now
@@ -74,6 +75,7 @@ export default function Home() {
 
     useEffect(() => {
         const openSlices = slices.filter((it)=>includeDoneSlices ? true : it.status !== "Done")
+            .filter(it => forecasts.some(forecast => !(it.slices.includes(it.title) && forecast.exclude)))
         setFilterSlices(openSlices)
         const {min, max} = calculateSliceCountRange(openSlices.length);
         setSliceCountMin(isNaN(min) ? 0 : min);
@@ -88,7 +90,9 @@ export default function Home() {
         }
 
         setSlices(loadedSlices);
-        const openSlices = loadedSlices.filter(it => it.status !== "Done").filter(it => forecasts.some(forecast => !(it.slices.includes(it.title) && forecast.exclude)))
+        setForecasts(forecasts)
+        const openSlices = loadedSlices.filter(it => it.status !== "Done")
+            .filter(it => forecasts.some(forecast => !(it.slices.includes(it.title) && forecast.exclude)))
         setFilterSlices(openSlices);
 
         // Set slice count range based on loaded slices
