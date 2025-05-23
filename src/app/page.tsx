@@ -21,7 +21,6 @@ export default function Home() {
 
     const [jsonInput, setJsonInput] = useState('');
     const [slices, setSlices] = useState<any[]>([]);
-    const [forecasts, setForecasts] = useState<any[]>([]);
     const [filterSlices, setFilterSlices] = useState<any[]>([])
     const [deadlineDate, setDeadlineDate] = useState<Date>(() => {
         // Default to 30 days from now
@@ -89,7 +88,6 @@ export default function Home() {
         }
 
         setSlices(loadedSlices);
-        setForecasts(forecasts)
         const openSlices = loadedSlices.filter(it => it.status !== "Done").filter(it => forecasts.some(forecast => !(it.slices.includes(it.title) && forecast.exclude)))
         setFilterSlices(openSlices);
 
