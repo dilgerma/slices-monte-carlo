@@ -26,7 +26,7 @@ export function calculateRisk(slices:any[], groups:any[]) {
             }
 
             // Each slice in the group contributes (group risk / total slices) to the overall risk
-            const groupContribution = (group.slices.length * group.risk) / totalSliceCount;
+            const groupContribution = (group.slices.filter((it:any) => it.status !== "Done").length * group.risk) / totalSliceCount;
             totalRiskContribution += groupContribution;
         });
     }
