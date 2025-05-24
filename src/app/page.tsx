@@ -146,7 +146,7 @@ export default function Home() {
     return (
         <section className="section">
             <div className="container">
-                <h1 className="title">Monaco Slicing</h1>
+                <h1 className="title">Mona-Slicing Forecast</h1>
                 <p className="subtitle">Predict project completion dates based on slices and historical throughput</p>
 
                 {!filterSlices || filterSlices?.length == 0 || debug ?
