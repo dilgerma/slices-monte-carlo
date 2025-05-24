@@ -72,6 +72,7 @@ export default function Home() {
     // Global uncertainty factor
     const [uncertaintyFactor, setUncertaintyFactor] = useState(0.0);
     const [risk, setRisk] = useState(0.0);
+    const [ignoreRisk, setIgnoreRisk] = useState(false);
 
     const [result, setResult] = useState<any | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -122,6 +123,7 @@ export default function Home() {
                 throughputMax,
                 uncertaintyFactor,
                 risk,
+                ignoreRisk,
                 startDate,
                 deadlineDate
             });
@@ -218,6 +220,15 @@ export default function Home() {
                                             className="checkbox"
                                             checked={includeDoneSlices}
                                             onChange={evt => setIncludeDoneSlices(evt.target.checked)}
+                                        />
+                                    </div>
+                                    <div className="field">
+                                        <label className="label">Ignore Risk</label>
+                                        <input
+                                            type="checkbox"
+                                            className="checkbox"
+                                            checked={ignoreRisk}
+                                            onChange={evt => setIgnoreRisk(evt.target.checked)}
                                         />
                                     </div>
                                 </div>

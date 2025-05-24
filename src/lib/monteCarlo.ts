@@ -146,6 +146,7 @@ export function monteCarloThroughputSimulation(params: {
     throughputMin: number;
     throughputMax: number | null; // Allow null for empty value
     risk: number;
+    ignoreRisk: boolean,
     uncertaintyFactor: number;
     startDate: Date;
     deadlineDate: Date;
@@ -161,6 +162,7 @@ export function monteCarloThroughputSimulation(params: {
         throughputMax,
         uncertaintyFactor,
         risk,
+        ignoreRisk,
         startDate,
         deadlineDate,
         iterations = 500
@@ -200,7 +202,8 @@ export function monteCarloThroughputSimulation(params: {
 
             // Apply uncertainty factor to throughput (only in the negative direction)
             // Generate a random uncertainty reduction between 0 and the uncertainty factor
-            const uncertaintyReduction = Math.random() * (uncertaintyFactor+risk);
+          const actualRisk = ignoreRisk ? 0 : risk
+            const uncertaintyReduction = Math.random() * (uncertaintyFactor+actualRisk);
             weeklyThroughput = weeklyThroughput * (1 - uncertaintyReduction);
 
             // Process one week's worth of slices
