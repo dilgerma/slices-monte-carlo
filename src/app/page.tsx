@@ -83,16 +83,16 @@ export default function Home() {
     }, [includeDoneSlices, slices, groups]);
 
     const parseJson = (jsonInput:any) => {
-        const {slices: loadedSlices, error: parseError, groups: groups} = parseJsonSlices(jsonInput);
+        const {slices: slices, error: parseError, sliceGroups: sliceGroups} = parseJsonSlices(jsonInput);
         if (parseError) {
             setError(parseError);
             return;
         }
 
-        setSlices(loadedSlices);
-        setGroups(groups)
-        const openSlices = loadedSlices.filter(it => it.status !== "Done")
-            .filter(it => groups?.length == 0 || !groups?.some(forecast => forecast.slices?.includes(it.title) && forecast?.exclude))
+        setSlices(slices);
+        setGroups(sliceGroups)
+        const openSlices = slices.filter(it => it.status !== "Done")
+            .filter(it => groups?.length == 0 || !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
         setFilterSlices(openSlices);
 
         // Set slice count range based on loaded slices
