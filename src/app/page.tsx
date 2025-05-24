@@ -21,7 +21,7 @@ export default function Home() {
 
     const [jsonInput, setJsonInput] = useState('');
     const [slices, setSlices] = useState<any[]>([]);
-    const [forecasts, setForecasts] = useState<any[]>([]);
+    const [groups, setGroups] = useState<any[]>([]);
     const [filterSlices, setFilterSlices] = useState<any[]>([])
     const [deadlineDate, setDeadlineDate] = useState<Date>(() => {
         // Default to 30 days from now
@@ -80,19 +80,19 @@ export default function Home() {
         const {min, max} = calculateSliceCountRange(openSlices.length);
         setSliceCountMin(isNaN(min) ? 0 : min);
         setSliceCountMax(max >= min ? max : min);
-    }, [includeDoneSlices, slices, forecasts]);
+    }, [includeDoneSlices, slices, groups]);
 
     const parseJson = (jsonInput:any) => {
-        const {slices: loadedSlices, error: parseError, forecasts: forecasts} = parseJsonSlices(jsonInput);
+        const {slices: loadedSlices, error: parseError, groups: groups} = parseJsonSlices(jsonInput);
         if (parseError) {
             setError(parseError);
             return;
         }
 
         setSlices(loadedSlices);
-        setForecasts(forecasts)
+        setGroups(groups)
         const openSlices = loadedSlices.filter(it => it.status !== "Done")
-            .filter(it => forecasts?.length == 0 || !forecasts?.some(forecast => forecast.slices?.includes(it.title) && forecast?.exclude))
+            .filter(it => groups?.length == 0 || !groups?.some(forecast => forecast.slices?.includes(it.title) && forecast?.exclude))
         setFilterSlices(openSlices);
 
         // Set slice count range based on loaded slices
