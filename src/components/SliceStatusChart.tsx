@@ -130,7 +130,7 @@ const SliceStatusChart: React.FC<SliceStatusChartProps> = ({ slices, groupByStat
             <div className="w-64 h-64 mx-auto">
                 <Pie data={chartData} options={options} />
             </div>
-            {!groupByStatus ? <div className="mt-4 text-center text-sm text-gray-600">
+            {!groupByStatus ? <div className="mt-4 text-center text-sm has-text-white">
                 Total Slices: {slices.length} | Completed: {doneCount} |
                 Completion Rate: {completionRate}%
             </div> : <span/>}
