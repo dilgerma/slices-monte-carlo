@@ -17,7 +17,7 @@ setInterval(() => {
       dataStore.delete(id);
     }
   }
-}, 5 * 60 * 1000);
+}, 2 * 60 * 1000);
 
 export function storeData(data: any): string {
   const id = uuidv4();
