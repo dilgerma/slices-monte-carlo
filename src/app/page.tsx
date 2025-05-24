@@ -121,6 +121,7 @@ export default function Home() {
                 throughputMin,
                 throughputMax,
                 uncertaintyFactor,
+                risk,
                 startDate,
                 deadlineDate
             });
