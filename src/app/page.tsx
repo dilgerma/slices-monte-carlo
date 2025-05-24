@@ -357,7 +357,7 @@ export default function Home() {
                                     onChange={e => setUncertaintyFactor(Number(e.target.value))}
                                     min="0"
                                     max="1"
-                                    step="0.05"
+                                    step="0.1"
                                 />
                                 <p className="help">
                                     Reduces throughput by up to this percentage (0 = no reduction, 0.2 = up to 20%
