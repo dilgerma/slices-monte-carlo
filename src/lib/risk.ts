@@ -21,7 +21,7 @@ export function calculateRisk(slices:any[], groups:any[]) {
     if (groups && Array.isArray(groups)) {
         groups.forEach(group => {
             // Skip groups without risk or slices
-            if (group.risk === undefined || !group.slices || !Array.isArray(group.slices)) {
+            if (group.risk === undefined || !group.slices || !Array.isArray(group.slices) || group.exclude) {
                 return;
             }
 
