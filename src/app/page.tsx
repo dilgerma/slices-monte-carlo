@@ -75,7 +75,7 @@ export default function Home() {
 
     useEffect(() => {
         const openSlices = slices.filter((it)=>includeDoneSlices ? true : it.status !== "Done")
-            .filter(it => forecasts?.length == 0 || !forecasts?.some(forecast => forecast.slices?.includes(it.title) && forecast?.exclude))
+            .filter(it => groups?.length == 0 || !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
         setFilterSlices(openSlices)
         const {min, max} = calculateSliceCountRange(openSlices.length);
         setSliceCountMin(isNaN(min) ? 0 : min);
