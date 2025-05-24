@@ -143,7 +143,7 @@ export default function Home() {
                 <h1 className="title">Monaco Slicing</h1>
                 <p className="subtitle">Predict project completion dates based on slices and historical throughput</p>
 
-                {!filterSlices || filterSlices?.length == 0 ?
+                {/*{!filterSlices || filterSlices?.length == 0 ?*/}
                 <div className="field">
                     <label className="label">Paste your JSON (array of slices)</label>
                     <div className="control">
@@ -159,7 +159,7 @@ export default function Home() {
                         Load Slices
                     </button>
                     {error && <p className="help is-danger">{error}</p>}
-                </div> : <span/>}
+                </div> {/*: <span/>}*/}
 
                 {filterSlices.length > 0 && (
                     <>
