@@ -14,10 +14,12 @@ import {
     calculateSliceCountRange
 } from '@/lib/utils';
 import {useSearchParams} from "next/navigation";
+import SliceStatusChart from "@/components/SliceStatusChart";
 
 export default function Home() {
     const searchParams = useSearchParams();
     const dataId = searchParams.get('id');
+    const debug = searchParams.get('debug')
 
     const [jsonInput, setJsonInput] = useState('');
     const [slices, setSlices] = useState<any[]>([]);
@@ -68,7 +70,8 @@ export default function Home() {
     const [throughputMax, setThroughputMax] = useState(5); // Maximum slices per week
 
     // Global uncertainty factor
-    const [uncertaintyFactor, setUncertaintyFactor] = useState(0.1); // 20% uncertainty by default
+    const [uncertaintyFactor, setUncertaintyFactor] = useState(0.0);
+    const [risk, setRisk] = useState(0.0);
 
     const [result, setResult] = useState<any | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -83,12 +86,12 @@ export default function Home() {
     }, [includeDoneSlices, slices, groups]);
 
     const parseJson = (jsonInput:any) => {
-        const {slices: slices, error: parseError, sliceGroups: sliceGroups} = parseJsonSlices(jsonInput);
+        const {slices: slices, error: parseError, sliceGroups: sliceGroups, risk:risk} = parseJsonSlices(jsonInput);
         if (parseError) {
             setError(parseError);
             return;
         }
-
+        setRisk(risk)
         setSlices(slices);
         setGroups(sliceGroups)
         const openSlices = slices.filter(it => it.status !== "Done")
@@ -143,7 +146,7 @@ export default function Home() {
                 <h1 className="title">Monaco Slicing</h1>
                 <p className="subtitle">Predict project completion dates based on slices and historical throughput</p>
 
-                {/*{!filterSlices || filterSlices?.length == 0 ?*/}
+                {!filterSlices || filterSlices?.length == 0 || debug ?
                 <div className="field">
                     <label className="label">Paste your JSON (array of slices)</label>
                     <div className="control">
@@ -155,11 +158,20 @@ export default function Home() {
                   placeholder='{"slices": [{"title": "Slice A"}, {"title": "Slice B"}]}'
               />
                     </div>
-                     <button className="button is-link mt-2" onClick={()=>{parseJson(jsonInput)}}>
+                    <button className="button is-link mt-2" onClick={() => {
+                        parseJson(jsonInput)
+                    }}>
                         Load Slices
                     </button>
                     {error && <p className="help is-danger">{error}</p>}
-                </div> {/*: <span/>}*/}
+                </div> : <span/>}
+
+                {filterSlices.length > 0 ? <div className={"columns"}>
+                    <div className="column is-4"><SliceStatusChart slices={slices}/></div>
+                    <div className={"column"}/>
+                    <div className="column is-4"><SliceStatusChart slices={slices} groupByStatus={true}/></div>
+                </div> : <span/>}
+
 
                 {filterSlices.length > 0 && (
                     <>
@@ -339,6 +351,22 @@ export default function Home() {
                                     Reduces throughput by up to this percentage (0 = no reduction, 0.2 = up to 20%
                                     slower).
                                     Higher values represent more pessimistic scenarios.
+                                </p>
+                            </div>
+
+                            <div className="field">
+                                <label className="label">Risk</label>
+                                <input
+                                    readOnly={true}
+                                    className="input"
+                                    type="number"
+                                    value={risk}
+                                    min="0"
+                                    max="1"
+                                    step="0.05"
+                                />
+                                <p className="help">
+                                    Calculated from the grouped slices and assigned risk.
                                 </p>
                             </div>
                         </div>

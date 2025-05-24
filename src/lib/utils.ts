@@ -1,6 +1,7 @@
 /**
  * Utility functions for date formatting and calculations
  */
+import {calculateRisk} from "@/lib/risk";
 
 // Calculate days until deadline from now
 export const calculateDaysFromNow = (targetDate: Date): number => {
@@ -26,22 +27,25 @@ export const formatDateForInput = (date: Date): string => {
 };
 
 // Parse JSON input for slices
-export const parseJsonSlices = (jsonInput: string): { sliceGroups: any[], slices: any[], error: string | null } => {
+export const parseJsonSlices = (jsonInput: string): { sliceGroups: any[], slices: any[], error: string | null, risk:number } => {
     try {
         const data = JSON.parse(jsonInput);
         if (!Array.isArray(data.slices)) throw new Error('JSON must be an array of slices.');
         if (!data.slices.every((s: any) => s.title)) throw new Error('Each slice must have a "title".');
 
+
         return {
             slices: data.slices,
             sliceGroups: data.sliceGroups || [],
-            error: null
+            error: null,
+            risk: Number(calculateRisk(data.slices, data.sliceGroups)?.toFixed(2))
         };
     } catch (e: any) {
         return {
             sliceGroups: [],
             slices: [],
-            error: e.message
+            error: e.message,
+            risk:0
         };
     }
 };
