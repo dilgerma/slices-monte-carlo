@@ -96,6 +96,7 @@ const SliceStatusChart: React.FC<SliceStatusChartProps> = ({ slices, groupByStat
         maintainAspectRatio: true,
         plugins: {
             legend: {
+                color: 'white',
                 position: 'bottom' as const,
             },
             tooltip: {
