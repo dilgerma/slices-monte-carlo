@@ -25,6 +25,7 @@ export default function Home() {
     const [slices, setSlices] = useState<any[]>([]);
     const [groups, setGroups] = useState<any[]>([]);
     const [filterSlices, setFilterSlices] = useState<any[]>([])
+    const [selectedRelease, setSelectedRelease] = useState<string>()
     const [deadlineDate, setDeadlineDate] = useState<Date>(() => {
         // Default to 30 days from now
         const date = new Date();
@@ -64,6 +65,7 @@ export default function Home() {
     const [startDate, setStartDate] = useState<Date>(new Date());
 
     const [includeDoneSlices, setIncludeDoneSlices] = useState(false)
+    const [releases, setReleases] = useState<string[]>([])
 
     // Throughput range (slices per week)
     const [throughputMin, setThroughputMin] = useState(3); // Minimum slices per week
@@ -95,6 +97,7 @@ export default function Home() {
         setRisk(risk)
         setSlices(slices);
         setGroups(sliceGroups)
+        setReleases(sliceGroups.map(it => it.targetRelease).filter(it => it))
         const openSlices = slices.filter(it => it.status !== "Done")
             .filter(it => groups?.length == 0 || !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
         setFilterSlices(openSlices);
@@ -230,6 +233,22 @@ export default function Home() {
                                             checked={ignoreRisk}
                                             onChange={evt => setIgnoreRisk(evt.target.checked)}
                                         />
+                                    </div>
+                                    <div className="field">
+                                        <label className="label">Target Release</label>
+                                        <div className="select">
+                                            <select
+                                                value={selectedRelease}
+                                                onChange={evt => setSelectedRelease(evt.target.value)}
+                                            >
+                                                <option value="">All Releases</option>
+                                                {releases.map((release, index) => (
+                                                    <option key={index} value={release}>
+                                                        {release}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
