@@ -234,7 +234,7 @@ export default function Home() {
                                             onChange={evt => setIgnoreRisk(evt.target.checked)}
                                         />
                                     </div>
-                                    <div className="field">
+                                    {releases?.length > 0 ? <div className="field">
                                         <label className="label">Target Release</label>
                                         <div className="select">
                                             <select
@@ -249,7 +249,7 @@ export default function Home() {
                                                 ))}
                                             </select>
                                         </div>
-                                    </div>
+                                    </div>: <span/>}
                                 </div>
                             </div>
 
