@@ -83,7 +83,7 @@ export default function Home() {
         const openSlices = slices.filter((it) => includeDoneSlices ? true : it.status !== "Done")
             .filter(it => groups?.length == 0 ||
                 !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
-            .filter(it => selectedRelease ? groups.find(it => it.targetRelease === selectedRelease)?.slices?.includes(it.title) : true)
+            .filter(it => selectedRelease ? groups.filter(it => it.targetRelease === selectedRelease)?.flatMap(it => it.slices)?.includes(it.title) : true)
 
         setFilterSlices(openSlices)
         const {min, max} = calculateSliceCountRange(openSlices.length);
