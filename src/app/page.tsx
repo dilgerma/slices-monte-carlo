@@ -80,16 +80,19 @@ export default function Home() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const openSlices = slices.filter((it)=>includeDoneSlices ? true : it.status !== "Done")
-            .filter(it => groups?.length == 0 || !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
+        const openSlices = slices.filter((it) => includeDoneSlices ? true : it.status !== "Done")
+            .filter(it => groups?.length == 0 ||
+                !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
+            .filter(it => selectedRelease ? groups.find(it => it.targetRelease === selectedRelease)?.slices?.includes(it.title) : true)
+
         setFilterSlices(openSlices)
         const {min, max} = calculateSliceCountRange(openSlices.length);
         setSliceCountMin(isNaN(min) ? 0 : min);
         setSliceCountMax(max >= min ? max : min);
-    }, [includeDoneSlices, slices, groups]);
+    }, [includeDoneSlices, slices, groups, selectedRelease]);
 
-    const parseJson = (jsonInput:any) => {
-        const {slices: slices, error: parseError, sliceGroups: sliceGroups, risk:risk} = parseJsonSlices(jsonInput);
+    const parseJson = (jsonInput: any) => {
+        const {slices: slices, error: parseError, sliceGroups: sliceGroups, risk: risk} = parseJsonSlices(jsonInput);
         if (parseError) {
             setError(parseError);
             return;
@@ -153,9 +156,9 @@ export default function Home() {
                 <p className="subtitle">Predict project completion dates based on slices and historical throughput</p>
 
                 {!filterSlices || filterSlices?.length == 0 || debug ?
-                <div className="field">
-                    <label className="label">Paste your JSON (array of slices)</label>
-                    <div className="control">
+                    <div className="field">
+                        <label className="label">Paste your JSON (array of slices)</label>
+                        <div className="control">
               <textarea
                   className="textarea"
                   rows={10}
@@ -163,14 +166,14 @@ export default function Home() {
                   onChange={e => setJsonInput(e.target.value)}
                   placeholder='{"slices": [{"title": "Slice A"}, {"title": "Slice B"}]}'
               />
-                    </div>
-                    <button className="button is-link mt-2" onClick={() => {
-                        parseJson(jsonInput)
-                    }}>
-                        Load Slices
-                    </button>
-                    {error && <p className="help is-danger">{error}</p>}
-                </div> : <span/>}
+                        </div>
+                        <button className="button is-link mt-2" onClick={() => {
+                            parseJson(jsonInput)
+                        }}>
+                            Load Slices
+                        </button>
+                        {error && <p className="help is-danger">{error}</p>}
+                    </div> : <span/>}
 
                 {filterSlices.length > 0 ? <div className={"columns"}>
                     <div className="column is-4"><SliceStatusChart slices={slices}/></div>
@@ -239,7 +242,10 @@ export default function Home() {
                                         <div className="select">
                                             <select
                                                 value={selectedRelease}
-                                                onChange={evt => setSelectedRelease(evt.target.value)}
+                                                    onChange={evt => {
+                                                        setSelectedRelease(releases?.includes(evt.target.value)? evt.target.value : undefined)
+                                                    }
+                                                }
                                             >
                                                 <option value="">All Releases</option>
                                                 {releases.map((release, index) => (
@@ -249,7 +255,7 @@ export default function Home() {
                                                 ))}
                                             </select>
                                         </div>
-                                    </div>: <span/>}
+                                    </div> : <span/>}
                                 </div>
                             </div>
 
