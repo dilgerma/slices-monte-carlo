@@ -97,8 +97,7 @@ export default function Home() {
         setRisk(risk)
         setSlices(slices);
         setGroups(sliceGroups)
-        setReleases(sliceGroups.map(it => it.targetRelease).filter(it => it))
-        const openSlices = slices.filter(it => it.status !== "Done")
+        setReleases([...new Set(sliceGroups.map(it => it.targetRelease).filter(it => it))])        const openSlices = slices.filter(it => it.status !== "Done")
             .filter(it => groups?.length == 0 || !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
         setFilterSlices(openSlices);
 
