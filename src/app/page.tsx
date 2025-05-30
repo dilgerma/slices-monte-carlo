@@ -61,7 +61,7 @@ export default function Home() {
     const [splitFactorMax, setSplitFactorMax] = useState(1.2);
 
     // Historical throughput (slices per week)
-    const [throughputInput, setThroughputInput] = useState([]); // Slices per week
+    const [throughputInput, setThroughputInput] = useState<string>(""); // Slices per week
 
     const [startDate, setStartDate] = useState<Date>(new Date());
 
