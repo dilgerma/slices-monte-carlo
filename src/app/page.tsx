@@ -58,7 +58,7 @@ export default function Home() {
     const [sliceCountMin, setSliceCountMin] = useState(0); // Will be set based on JSON input
     const [sliceCountMax, setSliceCountMax] = useState(0); // Will be set based on JSON input
     const [splitFactorMin, setSplitFactorMin] = useState(1.0);
-    const [splitFactorMax, setSplitFactorMax] = useState(1.2);
+    const [splitFactorMax, setSplitFactorMax] = useState(1.0);
 
     // Historical throughput (slices per week)
     const [throughputInput, setThroughputInput] = useState<string>(""); // Slices per week
@@ -357,8 +357,7 @@ export default function Home() {
                                                 type="number"
                                                 value={throughputMin}
                                                 onChange={e => setThroughputMin(Number(e.target.value))}
-                                                min="0.1"
-                                                step="0.1"
+                                                step="1"
                                             />
                                         </div>
                                     </div>
@@ -371,7 +370,7 @@ export default function Home() {
                                                 value={throughputMax}
                                                 onChange={e => setThroughputMax(Number(e.target.value))}
                                                 min={throughputMin}
-                                                step="0.1"
+                                                step="1"
                                             />
                                         </div>
                                     </div>
