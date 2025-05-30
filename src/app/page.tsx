@@ -15,6 +15,7 @@ import {
 } from '@/lib/utils';
 import {useSearchParams} from "next/navigation";
 import SliceStatusChart from "@/components/SliceStatusChart";
+import {calculateRisk} from "@/lib/risk";
 
 export default function Home() {
     const searchParams = useSearchParams();
@@ -85,6 +86,9 @@ export default function Home() {
                 !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
             .filter(it => selectedRelease ? groups.filter(it => it.targetRelease === selectedRelease)?.flatMap(it => it.slices)?.includes(it.title) : true)
 
+        const calculatedRisk = Number(calculateRisk(openSlices, sliceGroups)?.toFixed(2))
+        setRisk(calculatedRisk)
+
         setFilterSlices(openSlices)
         const {min, max} = calculateSliceCountRange(openSlices.length);
         setSliceCountMin(isNaN(min) ? 0 : min);
@@ -92,18 +96,20 @@ export default function Home() {
     }, [includeDoneSlices, slices, groups, selectedRelease]);
 
     const parseJson = (jsonInput: any) => {
-        const {slices: slices, error: parseError, sliceGroups: sliceGroups, risk: risk} = parseJsonSlices(jsonInput);
+        const {slices: slices, error: parseError, sliceGroups: sliceGroups} = parseJsonSlices(jsonInput);
         if (parseError) {
             setError(parseError);
             return;
         }
-        setRisk(risk)
         setSlices(slices);
         setGroups(sliceGroups)
         setReleases([...new Set(sliceGroups.map(it => it.targetRelease).filter(it => it))])
         const openSlices = slices.filter(it => it.status !== "Done")
             .filter(it => groups?.length == 0 || !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
         setFilterSlices(openSlices);
+
+        const calculatedRisk = Number(calculateRisk(openSlices, sliceGroups)?.toFixed(2))
+        setRisk(calculatedRisk)
 
         // Set slice count range based on loaded slices
         const {min, max} = calculateSliceCountRange(openSlices.length);
