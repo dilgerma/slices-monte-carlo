@@ -35,11 +35,11 @@ export function calculateRisk(slices:any[], groups:any[], includeDone: boolean) 
             }
 
             // Each slice in the group contributes (group risk / total slices) to the overall risk
-            const groupContribution = (findGroupSlices(slices,group,includeDone)?.length * group.risk) / totalSliceCount;
+            const groupContribution = (findGroupSlices(slices,group,includeDone)?.length * group.risk);
             totalRiskContribution += groupContribution;
         });
     }
 
     // Return the total risk contribution
-    return totalRiskContribution;
+    return totalRiskContribution / slices.length;
 }
