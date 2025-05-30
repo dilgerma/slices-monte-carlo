@@ -61,7 +61,7 @@ export default function Home() {
     const [splitFactorMax, setSplitFactorMax] = useState(1.2);
 
     // Historical throughput (slices per week)
-    const [throughputInput, setThroughputInput] = useState('5, 6, 4, 7, 5'); // Slices per week
+    const [throughputInput, setThroughputInput] = useState([]); // Slices per week
 
     const [startDate, setStartDate] = useState<Date>(new Date());
 
@@ -341,7 +341,7 @@ export default function Home() {
                                     type="text"
                                     value={throughputInput}
                                     onChange={e => setThroughputInput(e.target.value)}
-                                    placeholder="5, 6, 4, 7, 5"
+                                    placeholder="comma separated list of weekly throughput"
                                 />
                                 <p className="help">Enter your teams historical throughput in slices per week</p>
                             </div>
