@@ -86,14 +86,14 @@ export default function Home() {
                 !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
             .filter(it => selectedRelease ? groups.filter(it => it.targetRelease === selectedRelease)?.flatMap(it => it.slices)?.includes(it.title) : true)
 
-        const calculatedRisk = Number(calculateRisk(openSlices, groups)?.toFixed(2))
+        const calculatedRisk = Number(calculateRisk(openSlices, groups, includeDoneSlices)?.toFixed(2))
         setRisk(calculatedRisk)
 
         setFilterSlices(openSlices)
         const {min, max} = calculateSliceCountRange(openSlices.length);
         setSliceCountMin(isNaN(min) ? 0 : min);
         setSliceCountMax(max >= min ? max : min);
-    }, [includeDoneSlices, slices, groups, selectedRelease]);
+    }, [includeDoneSlices, slices, groups, selectedRelease,ignoreRisk]);
 
     const parseJson = (jsonInput: any) => {
         const {slices: slices, error: parseError, sliceGroups: sliceGroups} = parseJsonSlices(jsonInput);
@@ -108,7 +108,7 @@ export default function Home() {
             .filter(it => groups?.length == 0 || !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
         setFilterSlices(openSlices);
 
-        const calculatedRisk = Number(calculateRisk(openSlices, sliceGroups)?.toFixed(2))
+        const calculatedRisk = Number(calculateRisk(openSlices, sliceGroups, includeDoneSlices)?.toFixed(2))
         setRisk(calculatedRisk)
 
         // Set slice count range based on loaded slices
