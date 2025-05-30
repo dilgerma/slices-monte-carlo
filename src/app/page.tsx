@@ -86,7 +86,7 @@ export default function Home() {
                 !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
             .filter(it => selectedRelease ? groups.filter(it => it.targetRelease === selectedRelease)?.flatMap(it => it.slices)?.includes(it.title) : true)
 
-        const calculatedRisk = Number(calculateRisk(openSlices, sliceGroups)?.toFixed(2))
+        const calculatedRisk = Number(calculateRisk(openSlices, groups)?.toFixed(2))
         setRisk(calculatedRisk)
 
         setFilterSlices(openSlices)
