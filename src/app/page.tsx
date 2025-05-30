@@ -175,6 +175,8 @@ export default function Home() {
                         </div>
                         <button className="button is-link mt-2" onClick={() => {
                             parseJson(jsonInput)
+                            setSelectedRelease(undefined)
+                            setResult(undefined)
                         }}>
                             Load Slices
                         </button>
