@@ -43,8 +43,7 @@ export const parseJsonSlices = (jsonInput: string): { sliceGroups: any[], slices
         return {
             sliceGroups: [],
             slices: [],
-            error: e.message,
-            risk:0
+            error: e.message
         };
     }
 };
