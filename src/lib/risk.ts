@@ -1,7 +1,7 @@
 
 const findGroupSlices = (slices: any[], group:any, includeDone: boolean): any[] => {
     return group.slices
-        .map((it:any) => slices.find(item => item.title == it.title))
+        .map((it:any) => slices.find(item => item.title == it))
         .filter((it:any) => includeDone || it.status !== "Done")
 
 }

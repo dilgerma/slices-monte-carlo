@@ -81,7 +81,7 @@ export default function Home() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const openSlices = slices.filter((it) => includeDoneSlices ? true : it.status !== "Done")
+        const openSlices = slices.filter((it) => includeDoneSlices ? true : it?.status !== "Done")
             .filter(it => groups?.length == 0 ||
                 !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
             .filter(it => selectedRelease ? groups.filter(it => it.targetRelease === selectedRelease)?.flatMap(it => it.slices)?.includes(it.title) : true)
@@ -104,7 +104,7 @@ export default function Home() {
         setSlices(slices);
         setGroups(sliceGroups)
         setReleases([...new Set(sliceGroups.map(it => it.targetRelease).filter(it => it))])
-        const openSlices = slices.filter(it => it.status !== "Done")
+        const openSlices = slices.filter(it => it?.status !== "Done")
             .filter(it => groups?.length == 0 || !groups?.some(group => group.slices?.includes(it.title) && group?.exclude))
         setFilterSlices(openSlices);
 
